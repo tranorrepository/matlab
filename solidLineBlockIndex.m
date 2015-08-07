@@ -4,11 +4,13 @@ function [solidLineData, solidLineIndex] = solidLineBlockIndex(data)
 %
 %   INPUT:
 %
-%   data - organized GPS data, 19 columns(ford) or 6 columns(Honda)
+%   data - organized GPS data from section, suppose data column format is
+%          (x1, y1, x2, y2, x3, y3, ..., flag1, flag2, flag3, ..., 
+%           sectionID, merged times)
 %
 %   OUTPUT:
 %
-%   solidLineData - solid line start/stop block index of GPS data
+%   solidLineData  - solid line start/stop block index of GPS data
 %   solidLineIndex - the column of paint solid line
 %
 

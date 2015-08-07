@@ -4,11 +4,13 @@ function [dotBlkIndex, dotLineIndex] = dotLineBlockIndex(data)
 %
 %   INPUT:
 %
-%   data - organized GPS data, 19 columns(ford) or 6 columns(Honda)
+%   data - organized GPS data from section, suppose data column format is
+%          (x1, y1, x2, y2, x3, y3, ..., flag1, flag2, flag3, ..., 
+%           sectionID, merged times)
 %
 %   OUTPUT:
 %
-%   dotBlkIndex - dotted line start/stop block index of GPS data
+%   dotBlkIndex  - dotted line start/stop block index of GPS data
 %   dotLineIndex - the column of paint dotted line
 %
 

@@ -5,8 +5,11 @@ function dotLineParams = getDotLineParams(data, dotBlkIndex, dotLineIndex)
 %
 %   INPUT:
 %
-%   data - organized GPS data, 19 columns(ford) or 6 columns(Honda)
-%   dotBlkIndex - dotted line start/stop block index of GPS data
+%   data - organized GPS data from section, suppose data column format is
+%          (x1, y1, x2, y2, x3, y3, ..., flag1, flag2, flag3, ..., 
+%           sectionID, merged times)
+%
+%   dotBlkIndex  - dotted line start/stop block index of GPS data
 %   dotLineIndex - the column of paint dotted line
 %
 %   OUTPUT:
@@ -34,10 +37,10 @@ for i = 1:items
     lengthData(i, :) = data(dotBlkIndex(i, 2), indexData) - ...
                        data(dotBlkIndex(i, 1), indexData);
     % width
-%     widthData(i, 1) = sum(data(dotBlkIndex(i, 2):dotBlkIndex(i, 2), dotLineIndex + 3) - ...
-%                           data(dotBlkIndex(i, 2):dotBlkIndex(i, 2), dotLineIndex + 1));
-%     widthData(i, 2) = sum(data(dotBlkIndex(i, 2):dotBlkIndex(i, 2), dotLineIndex + 4) - ...
-%                           data(dotBlkIndex(i, 2):dotBlkIndex(i, 2), dotLineIndex + 2));
+%     widthData(i, 1) = sum(data(dotBlkIndex(i, 1):dotBlkIndex(i, 2), dotLineIndex + 3) - ...
+%                           data(dotBlkIndex(i, 1):dotBlkIndex(i, 2), dotLineIndex + 1));
+%     widthData(i, 2) = sum(data(dotBlkIndex(i, 1):dotBlkIndex(i, 2), dotLineIndex + 4) - ...
+%                           data(dotBlkIndex(i, 1):dotBlkIndex(i, 2), dotLineIndex + 2));
 end
 
 % angle

@@ -1,30 +1,48 @@
 function drawAllGPSData(GPS_DATA, color, mkrsz)
+% DRAWALLGPSDATA
+%   plot all GPS data
+%
+%   INPUT:
+%
+%   GPS_DATA - a section GPS data, suppose format is 
+%              (x1, y1, x2, y2, x3, y3, ..., flag1, flag2, flag3, ..., 
+%               sectionID, merged times)
+%
+%   color    - color for plotting data
+%
+%   mkrsz    - marker size
+%
+%   OUTPUT:
+%
+%   NONE
+%
+
 [~, cols] = size(GPS_DATA);
 
-if (6 ~= cols && 19 ~= cols && 7 ~= cols && 20 ~= cols)
-    error('invalid data set!');
+if 0 ~= mod(cols, 3)
+    error('Invalid input data for drawAllGPSData!');
 end
 
-lrIndex  = [3; 14];
-xyIndex = [lrIndex - 2, lrIndex - 1];
-if (6 == cols) || (7 == cols)
-    lrIndex  = [5; 6];
-    xyIndex = [lrIndex - 4, lrIndex - 2]';
-end
+% define x, y index, current it's (y, x) order
+xIndex = 2;
+yIndex = 1;
 
-lrPaint = GPS_DATA(:, lrIndex);
+% number of lines in GPS data
+numOfLines = fix((cols - 2) / 3);
 
-lxyData = GPS_DATA(:, xyIndex(1, :));
-rxyData = GPS_DATA(:, xyIndex(2, :));
+% paint info column index
+flagIndex = 2 * numOfLines + 1 : 3 * numOfLines;
 
-if 3 == nargin
-    plot(lxyData(lrPaint(:, 1) == 1, 2), lxyData(lrPaint(:, 1) == 1, 1), ...
-        color, 'MarkerSize', mkrsz); hold on;
-    plot(rxyData(lrPaint(:, 2) == 1, 2), rxyData(lrPaint(:, 2) == 1, 1), ...
-        color, 'MarkerSize', mkrsz); hold on;
-else
-    plot(lxyData(lrPaint(:, 1) == 1, 2), lxyData(lrPaint(:, 1) == 1, 1), ...
-        '.', 'Color', [0.66, 0.66, 0.66], 'MarkerSize', 1); hold on;
-    plot(rxyData(lrPaint(:, 2) == 1, 2), rxyData(lrPaint(:, 2) == 1, 1), ...
-        '.', 'Color', [0.66, 0.66, 0.66], 'MarkerSize', 1); hold on;
+% iterate each line
+for nl = 1:numOfLines
+    xyData = GPS_DATA(:, 2 * nl - 1 : 2 * nl);
+    if 3 == nargin
+        plot(xyData(GPS_DATA(:, flagIndex(nl)) == 1, xIndex), ...
+             xyData(GPS_DATA(:, flagIndex(nl)) == 1, yIndex), ...
+             color, 'MarkerSize', mkrsz); hold on;
+    else
+        plot(xyData(GPS_DATA(:, flagIndex(nl)) == 1, xIndex), ...
+             xyData(GPS_DATA(:, flagIndex(nl)) == 1, yIndex), ...
+             '.', 'Color', [0.66, 0.66, 0.66], 'MarkerSize', 1); hold on;
+    end
 end

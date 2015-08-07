@@ -4,23 +4,24 @@ function [paintIndex, xyIndex] = getPaintIndex(data)
 %
 %   INPUT:
 %
-%   data - organized GPS data, 19 columns(ford) or 6 columns(Honda)
+%   data - organized GPS data from section, suppose data column format is
+%          (x1, y1, x2, y2, x3, y3, ..., flag1, flag2, flag3, ..., 
+%           sectionID, merged times)
 %
 %   OUTPUT:
 %
 %   paintIndex - painted line column index
-%   xyIndex - x, y column index of painted line
+%   xyIndex    - x, y column index of painted line
 %
 
+% total columns of input data
 cols = size(data, 2);
 
-if (6 ~= cols && 19 ~= cols && 7 ~= cols && 20 ~= cols)
-    error('invalid data set!');
-end
+% number of lines in GPS data
+numOfLines = fix((cols - 2) / 3);
 
-paintIndex  = [3; 14];
-xyIndex = [paintIndex - 2, paintIndex - 1];
-if (6 == cols) || (7 == cols)
-    paintIndex  = [5; 6];
-    xyIndex = [paintIndex - 4, paintIndex - 2]';
-end
+% paint info column index
+paintIndex = 2 * numOfLines + 1 : 3 * numOfLines;
+
+% x, y data index array
+xyIndex = reshape(1 : 2 * numOfLines, 2, numOfLines)';

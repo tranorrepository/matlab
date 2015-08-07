@@ -44,7 +44,6 @@ solidLineMovedData = cell(1, datasetNum);
 figure(4)
 axis equal
 
-plotCount = 3;
 colorSet = cell(3, 1);
 colorSet{1} = 'k.';
 colorSet{2} = 'b.';
@@ -54,7 +53,6 @@ colorSet{3} = 'k.';
 for dn = 1:datasetNum
     % plot the data
     drawAllGPSData(data{dn}, colorSet{mod(dn, 3)});
-    plotCount = plotCount + 2;
     
     % get dotted line block and line index information
     [dotBlkIndex{dn}, dotLineIndex{dn}] = dotLineBlockIndex(data{dn});
