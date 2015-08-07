@@ -26,8 +26,14 @@ function sampleData = linSample(lineParams, solidLinePointsCnt)
 items = size(lineParams, 1);
 sampleData = zeros(solidLinePointsCnt, 3);
 
+% average points for each dotted line center
+averageCnt = floor(solidLinePointsCnt / items);
+
+% 3/4 of each dottedd line block is paint, 1/4 is not painted
+sampleDotLinePaintCnt = floor(0.75 * averageCnt * ones(items, 1));
+
 % dotted line paint points count, average merged point count
-sampleDotLinePaintCnt = round(0.5 * lineParams(:, 3));
+% sampleDotLinePaintCnt = round(0.5 * lineParams(:, 3));
 
 % total paint points count
 paintCnt = sum(sampleDotLinePaintCnt);

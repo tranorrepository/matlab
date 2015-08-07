@@ -1,4 +1,4 @@
-function drawAllGPSData(GPS_DATA, color)
+function drawAllGPSData(GPS_DATA, color, mkrsz)
 [~, cols] = size(GPS_DATA);
 
 if (6 ~= cols && 19 ~= cols && 7 ~= cols && 20 ~= cols)
@@ -17,12 +17,14 @@ lrPaint = GPS_DATA(:, lrIndex);
 lxyData = GPS_DATA(:, xyIndex(1, :));
 rxyData = GPS_DATA(:, xyIndex(2, :));
 
-plot(lxyData(lrPaint(:, 1) == 1, 2), lxyData(lrPaint(:, 1) == 1, 1), ...
-    color, 'MarkerSize', 1); hold on;
-plot(rxyData(lrPaint(:, 2) == 1, 2), rxyData(lrPaint(:, 2) == 1, 1), ...
-    color, 'MarkerSize', 1); hold on;
-
-% plot(lxyData(lrPaint(:, 1) == 1, 2), lxyData(lrPaint(:, 1) == 1, 1), ...
-%     '.', 'Color', [0.66, 0.66, 0.66], 'MarkerSize', 1); hold on;
-% plot(rxyData(lrPaint(:, 2) == 1, 2), rxyData(lrPaint(:, 2) == 1, 1), ...
-%     '.', 'Color', [0.66, 0.66, 0.66], 'MarkerSize', 1); hold on;
+if 3 == nargin
+    plot(lxyData(lrPaint(:, 1) == 1, 2), lxyData(lrPaint(:, 1) == 1, 1), ...
+        color, 'MarkerSize', mkrsz); hold on;
+    plot(rxyData(lrPaint(:, 2) == 1, 2), rxyData(lrPaint(:, 2) == 1, 1), ...
+        color, 'MarkerSize', mkrsz); hold on;
+else
+    plot(lxyData(lrPaint(:, 1) == 1, 2), lxyData(lrPaint(:, 1) == 1, 1), ...
+        '.', 'Color', [0.66, 0.66, 0.66], 'MarkerSize', 1); hold on;
+    plot(rxyData(lrPaint(:, 2) == 1, 2), rxyData(lrPaint(:, 2) == 1, 1), ...
+        '.', 'Color', [0.66, 0.66, 0.66], 'MarkerSize', 1); hold on;
+end

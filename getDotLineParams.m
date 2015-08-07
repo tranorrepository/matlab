@@ -43,6 +43,8 @@ end
 % angle
 theta = angle(lengthData(:, 1) + lengthData(:, 2)*1j);
 
+theta(theta < 0) = pi + theta(theta < 0);
+
 % length
 length = zeros(items, 1);
 lengthData = lengthData .* lengthData;

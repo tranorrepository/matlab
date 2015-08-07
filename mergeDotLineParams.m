@@ -1,4 +1,4 @@
-function [dotLineParams, moveVector] = mergeDotLineParams(dotLineParams0, dotLineParams1)
+function [dotLineParams, moveVector] = mergeDotLineParams(dotLineParams0, mergedCnt0, dotLineParams1, mergedCnt1)
 % MERGEDOTLINEPARAMS
 %   merge two dotted line
 %
@@ -55,9 +55,9 @@ for i = 1:itemsMin
     cnt0 = dotLineParamsMin(i, 3);
     cnt1 = dotLineParamsMax(j, 3);
     % center
-    dotLineParams(i, 1:2) = (cnt0 * dotLineParamsMin(i, 1:2) + ...
-                             cnt1 * dotLineParamsMax(j, 1:2)) / ...
-                             (cnt0 + cnt1);
+    dotLineParams(i, 1:2) = (mergedCnt0 * dotLineParamsMin(i, 1:2) + ...
+                             mergedCnt1 * dotLineParamsMax(j, 1:2)) / ...
+                             (mergedCnt0 + mergedCnt1);
 
 
 	% move vector
@@ -78,11 +78,11 @@ for i = 1:itemsMin
     dotLineParams(i, 3) = cnt0 + cnt1;
     
     % length and width
-    dotLineParams(i, 4:5) = (cnt0 * dotLineParamsMin(i, 4:5) + ...
-                             cnt1 * dotLineParamsMax(j, 4:5)) / ...
-                             (cnt0 + cnt1);
+    dotLineParams(i, 4:5) = (mergedCnt0 * dotLineParamsMin(i, 4:5) + ...
+                             mergedCnt1 * dotLineParamsMax(j, 4:5)) / ...
+                             (mergedCnt0 + mergedCnt1);
 
 	% angle
-    dotLineParams(i, 6) = angle(dotLineParamsMin(i, 4) * exp(1j*dotLineParamsMin(i, 6)) + ...
-                                dotLineParamsMin(i, 4) * exp(1j*dotLineParamsMax(j, 6)));
+    dotLineParams(i, 6) = angle(mergedCnt0 * dotLineParamsMin(i, 4) * exp(1j*dotLineParamsMin(i, 6)) + ...
+                                mergedCnt1 * dotLineParamsMax(j, 4) * exp(1j*dotLineParamsMax(j, 6)));
 end

@@ -1,4 +1,4 @@
-function mergedSolidLine = mergeSolidLinePaintData(solidLine0, solidLine1)
+function mergedSolidLine = mergeSolidLinePaintData(solidLine0, mergedCnt0, solidLine1, mergedCnt1)
 % MERGESOLIDLINEPAINTDATA
 %   merge two solid lines according to closest point match
 %
@@ -19,15 +19,22 @@ if size(solidLine0, 2) ~= size(solidLine1, 2)
     error('Invalid parameters for function mergeSolidLinePaintData()');
 end
 
-items = [size(solidLine0, 1); size(solidLine1, 1)];
-
 solidLine = cell(2, 1);
 solidLine{1, 1} = solidLine0;
 solidLine{2, 1} = solidLine1;
 
-% the minimum/maximum points and its index
-[itemsMin, itemsMinInd] = min(items);
-[~, itemsMaxInd]        = max(items);
+items0 = size(solidLine0, 1);
+items1 = size(solidLine1, 1);
+
+if items0 <= items1
+    itemsMin = items0;
+    itemsMinInd = 1;
+    itemsMaxInd = 2;
+else
+    itemsMin = items1;
+    itemsMinInd = 2;
+    itemsMaxInd = 1;
+end
 
 mergedSolidLine = zeros(itemsMin, size(solidLine0, 2));
 
