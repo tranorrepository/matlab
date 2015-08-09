@@ -1,0 +1,39 @@
+% data format specification in MATLAB
+% after segmentation, newData is the same format as database data
+%
+% sectionConfig
+%
+%   sectionID, body section, full section
+%   N sections
+%   cell(N, 2)
+%      sectionID, cell(1, 16)
+%                   body section (x, y), full section (x, y)
+%
+%                 5    1          2     6
+%                 +----+----------+-----+
+%                 |    |          |     |
+%                 +----+----------+-----+
+%                 7    3          4     8
+%                       \________/
+%                          body
+%                  \___________________/
+%                          full
+%
+%
+% dataBase/newData
+%
+%    sectionID, lines
+%                 line1,
+%                     point - x, y, paintFlag, mergedCount
+%                 line2,
+%                  ....
+%
+%    N sections
+%    cell(N, 2)
+%       sectionID, cell(1, M) - M lines in this section
+%                     (L, 4) - x, y, paintFlag, count
+%
+% landMark
+%
+%   current unknown
+% 
