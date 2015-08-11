@@ -13,8 +13,9 @@ function lineType = getLineType(lineData)
 %              0 - dotted, 1 - solid
 %
 
+load('common.mat');
+
 TH = 0.5;
-PAINT_IND = 3;
 
 threshold = sum(lineData(:, PAINT_IND) == 1) / ...
             sum(lineData(:, PAINT_IND) ~= -1);

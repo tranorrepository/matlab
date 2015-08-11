@@ -12,6 +12,9 @@ function dotBlkIndex = dotLineBlockIndex(lineData)
 %   dotBlkIndex  - dotted line start/stop block index of GPS data
 %
 
+load('common.mat');
+
+
 % dotted and solid line start/stop index
 % from which index to which the dotted/slid line starts and ends
 items = size(lineData, 1);

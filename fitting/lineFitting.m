@@ -14,6 +14,10 @@ function newLines = lineFitting(linesData)
 %
 %
 
+
+% load common data
+load('common.mat');
+
 % iterate for each line
 numOfLines = size(linesData, 2);
 
@@ -25,16 +29,28 @@ for ln = 1:numOfLines
     validData = line(line(:, PAINT_IND) ~= INVALID_FLAG, :);
     
     % initialize output data
-    newLines{1, ln} = validData;
+    newLines{1, ln} = line;
     
     % step 1 - curve fitting
     % currently use polynomial to do curve fitting, other method should be
     % used
-    pp = polyfit(validData(:, X), validData(:, Y), FIT_DEGREE);
+    [pXY, sXY] = polyfit(validData(:, X), validData(:, Y), FIT_DEGREE);
+    [~, delXY] = polyval(pXY, validData(:, X), sXY);
+    
+    [pYX, sYX] = polyfit(validData(:, Y), validData(:, X), FIT_DEGREE);
+    [~, delYX] = polyval(pYX, validData(:, Y), sYX);
+    
+    if sum(abs(delXY)) > sum(abs(delYX))
+        pp = pYX;
+        fitType = FIT_YX;
+    else
+        pp = pXY;
+        fitType = FIT_XY;
+    end
     
     % step 2 - remapping data
     % map input points to the closest points on the curve fitted
     
-    newLines{1, ln}(:, Y) = polyval(pp, validData(:, X)); % a tricky way here
-
+    closestPoints = mapCurveClosestPoint(pp, line, fitType);
+    newLines{1, ln}(:, 1:2) = closestPoints(:, 1:2);
 end

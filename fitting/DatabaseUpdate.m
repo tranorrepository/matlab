@@ -22,8 +22,6 @@ function [newDataBase, newBodyData, newLandMark] = DatabaseUpdate( ...
 %
 %
 
-% load common data
-load('common.mat');
 
 % input parameters validate
 numOfSegConfig  = size(sectionConfig, 1);
@@ -73,12 +71,19 @@ for ds = 1:numOfDataSet
     %       |____________the left line of new data matched line index in db
     %                |___the right line of new data matched line index in
     %                db
-    matchedLines = lineMatching(dbLines, ...
-                                newLinesAfterFitting);
+%     matchedLines = lineMatching(dbLines, ...
+%                                 newLinesAfterFitting);
+    matchedLines = cell(1, 3);
+%     matchedLines{1, 1} = cell(1, 2);
+    matchedLines{1, 1}{1, 1} = [0, 0];
+    matchedLines{1, 1}{1, 2} = [0, 0];
+    matchedLines{1, 2} = 1;
+    matchedLines{1, 3} = 2;
     
     % step 3 - data shift
-    dbLinesAfterShift  = shiftData(dbLinesAfterFit,  matchedLines{1}{:, 1});
-    newLinesAfterShift = shiftData(newLinesAfterFit, matchedLines{1}{:, 2});
+    dbLinesAfterFit = dbLines;
+    dbLinesAfterShift  = shiftData(dbLinesAfterFit,  matchedLines{1, 1}{:, 1});
+    newLinesAfterShift = shiftData(newLinesAfterFit, matchedLines{1, 1}{:, 2});
     
     % step 4 - data merging point-by-point
     dbLinesAfterShift{matchedLines{2}} = lineMerging(dbLinesAfterShift{matchedLines{2}}, ...
@@ -87,4 +92,30 @@ for ds = 1:numOfDataSet
                                                      newLinesAfterShift{2});
     % step 5 - update database
     newDataBase{ds} = dbLinesAfterShift;
+    
+    % database data
+    ol1 = dataBase{ds, 2}{1, 1};
+    ol2 = dataBase{ds, 2}{1, 2};
+    
+    plot(ol1(ol1(:, 3) == 1, 1), ol1(ol1(:, 3) == 1, 2), 'ko', 'MarkerSize', 3); hold on;
+    plot(ol2(ol2(:, 3) == 1, 1), ol2(ol2(:, 3) == 1, 2), 'ko', 'MarkerSize', 3); hold on;
+    
+    axis equal
+    
+    % new data
+    ol1 = newData{ds, 2}{1, 1};
+    ol2 = newData{ds, 2}{1, 2};
+    
+    plot(ol1(ol1(:, 3) == 1, 1), ol1(ol1(:, 3) == 1, 2), 'bo', 'MarkerSize', 3); hold on;
+    plot(ol2(ol2(:, 3) == 1, 1), ol2(ol2(:, 3) == 1, 2), 'bo', 'MarkerSize', 3); hold on;
+    
+    nl1 = dbLinesAfterShift{matchedLines{2}};
+    nl2 = dbLinesAfterShift{matchedLines{3}};
+    
+    plot(nl1(:, 1), nl1(:, 2), 'c-', 'MarkerSize', 1); hold on;
+    plot(nl2(:, 1), nl2(:, 2), 'c-', 'MarkerSize', 1); hold on;
+    
+    plot(nl1(nl1(:, 3) == 1, 1), nl1(nl1(:, 3) == 1, 2), 'ro', 'MarkerSize', 3); hold on;
+    plot(nl2(nl2(:, 3) == 1, 1), nl2(nl2(:, 3) == 1, 2), 'ro', 'MarkerSize', 3); hold on;
+    
 end

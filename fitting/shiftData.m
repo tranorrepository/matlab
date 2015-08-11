@@ -13,12 +13,20 @@ function newLines = shiftData(linesData,  vector)
 %
 %
 
+
+% load common data
+load('common.mat');
+
 newLines = linesData;
 
 % iterate for each line
 numOfLines = size(linesData, 2);
 for ln = 1:numOfLines
     % shift 
-    newLines{1, ln}(:, X) = linesData{1, ln}(:, X) + vector(1, X);
-    newLines{1, ln}(:, Y) = linesData{1, ln}(:, Y) + vector(1, Y);
+    newLines{1, ln}((linesData{1, ln}(:, 3) ~= INVALID_FLAG), X) = ...
+        linesData{1, ln}((linesData{1, ln}(:, 3) ~= INVALID_FLAG), X) + ...
+        vector(1, X);
+    newLines{1, ln}((linesData{1, ln}(:, 3) ~= INVALID_FLAG), Y) = ...
+        linesData{1, ln}((linesData{1, ln}(:, 3) ~= INVALID_FLAG), Y) + ....
+        vector(1, Y);
 end
