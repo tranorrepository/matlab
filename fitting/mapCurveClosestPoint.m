@@ -1,4 +1,4 @@
-function closestPoints = mapCurveClosestPoint(pp, line, type)
+function closestPoints = mapCurveClosestPoint(pp, line, type, s)
 % MAPCURVECLOSESTPOINT
 %   mapping line points to the closest point on fitted curve
 %
@@ -9,6 +9,7 @@ function closestPoints = mapCurveClosestPoint(pp, line, type)
 %          (x, y, paint flag, merged count)
 %   type - curve fitting x->y or y->x
 %          1 - FIT_XY, 2 - FIT_YX
+%   s    - standard variation
 %
 %   OUTPUT:
 %
@@ -37,14 +38,14 @@ if type == FIT_XY
         % only check valid points
         if line(np, 3) ~= INVALID_FLAG
             P1(X) = P0(X);
-            P1(Y) = polyval(pp, P1(X));
+            P1(Y) = polyval(pp, P1(X), s);
             
             % define curve function
             P2(X) = P0(X) - 5;
 %             f = @(x)pp(1)*x^4 + pp(2)*x^3 + pp(3)*x^2 + pp(4)*x + pp(5) - P2(Y);
 %             options=optimset('MaxIter',1e3,'TolFun',1e-3);
 %             P2(X) = fsolve(f, P0(X), options);
-            P2(Y) = polyval(pp, P2(X));
+            P2(Y) = polyval(pp, P2(X), s);
             while (1)
                 if abs(P2(X) - P1(X)) < DIST_TH
                     P0 = P2;
@@ -56,10 +57,10 @@ if type == FIT_XY
                 
                 if (d1 <= d2)
                     P2(X) = 0.5 * P1(X) + 0.5 *P2(X);
-                    P2(Y) = polyval(pp, P2(X));
+                    P2(Y) = polyval(pp, P2(X), s);
                 else
                     P1(X) = 0.5 * P1(X) + 0.5 *P2(X);
-                    P1(Y) = polyval(pp, P1(X));
+                    P1(Y) = polyval(pp, P1(X), s);
                 end
             end
         end
@@ -75,14 +76,14 @@ else
         % only check valid points
         if line(np, 3) ~= INVALID_FLAG
             P1(Y) = P0(Y);
-            P1(X) = polyval(pp, P1(Y));
+            P1(X) = polyval(pp, P1(Y), s);
             
             % define curve function
             P2(Y) = P0(Y) - 5;
 %             f = @(y)pp(1)*y^4 + pp(2)*y^3 + pp(3)*y^2 + pp(4)*y + pp(5) - P2(X);
 %             options=optimset('MaxIter',1e3,'TolFun',1e-3);
 %             P2(Y) = fsolve(f, P0(Y), options);
-            P2(X) = polyval(pp, P2(Y));
+            P2(X) = polyval(pp, P2(Y), s);
             while (1)
                 if abs(P2(Y) - P1(Y)) < DIST_TH
                     P0 = P2;
@@ -94,10 +95,10 @@ else
                 
                 if (d1 <= d2)
                     P2(Y) = 0.5 * P1(Y) + 0.5 *P2(Y);
-                    P2(X) = polyval(pp, P2(Y));
+                    P2(X) = polyval(pp, P2(Y), s);
                 else
                     P1(Y) = 0.5 * P1(Y) + 0.5 *P2(Y);
-                    P1(X) = polyval(pp, P1(Y));
+                    P1(X) = polyval(pp, P1(Y), s);
                 end
             end
         end

@@ -10,18 +10,27 @@ function lineType = getLineType(lineData)
 %   OUTPUT:
 %
 %   lineType - line type, dotted or solid
-%              0 - dotted, 1 - solid
+%              1010 - dotted, 1111 - solid
 %
 
 load('common.mat');
 
-TH = 0.5;
+typeValue = laneNumberDetection(lineData, DASH_CONT_POINTS_TH, PLOT_ON);
 
-threshold = sum(lineData(:, PAINT_IND) == 1) / ...
-            sum(lineData(:, PAINT_IND) ~= -1);
-
-if threshold < TH
+if typeValue < LINE_TYPE_TH
     lineType = DASH_LINE;
 else
     lineType = SOLID_LINE;
 end
+
+end % end of getLineType
+% TH = 0.5;
+% 
+% threshold = sum(lineData(:, PAINT_IND) == 1) / ...
+%             sum(lineData(:, PAINT_IND) ~= -1);
+% 
+% if threshold < TH
+%     lineType = DASH_LINE;
+% else
+%     lineType = SOLID_LINE;
+% end

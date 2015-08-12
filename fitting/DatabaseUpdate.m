@@ -20,6 +20,9 @@ function [newDataBase, newBodyData, newLandMark] = DatabaseUpdate( ...
 %   newBodyData   - body data for each section, no overlap
 %   newLandMark   - new land mark after merging
 %
+% ------------------------------------------------------------------------
+%   Author: Ming Chen, Aug 7, 2015 created
+% ------------------------------------------------------------------------
 %
 
 
@@ -29,7 +32,7 @@ numOfSegDBData  = size(dataBase, 1);
 numOfSegNewData = size(newData, 1);
 
 if numOfSegConfig ~= numOfSegDBData || numOfSegDBData ~= numOfSegNewData
-    error('Invalid input data for database update');
+    error('Invalid input data for database update!');
 end
 
 numOfDataSet = numOfSegDBData;
@@ -71,14 +74,14 @@ for ds = 1:numOfDataSet
     %       |____________the left line of new data matched line index in db
     %                |___the right line of new data matched line index in
     %                db
-%     matchedLines = lineMatching(dbLines, ...
-%                                 newLinesAfterFitting);
-    matchedLines = cell(1, 3);
+    matchedLines = lineMatching(dbLines, ...
+                                newLinesAfterFit);
+%     matchedLines = cell(1, 3);
 %     matchedLines{1, 1} = cell(1, 2);
-    matchedLines{1, 1}{1, 1} = [0, 0];
-    matchedLines{1, 1}{1, 2} = [0, 0];
-    matchedLines{1, 2} = 1;
-    matchedLines{1, 3} = 2;
+%     matchedLines{1, 1}{1, 1} = [0, 0];
+%     matchedLines{1, 1}{1, 2} = [0, 0];
+%     matchedLines{1, 2} = 1;
+%     matchedLines{1, 3} = 2;
     
     % step 3 - data shift
     dbLinesAfterFit = dbLines;
@@ -91,9 +94,9 @@ for ds = 1:numOfDataSet
     dbLinesAfterShift{matchedLines{3}} = lineMerging(dbLinesAfterShift{matchedLines{3}}, ...
                                                      newLinesAfterShift{2});
     % step 5 - update database
-    newDataBase{ds} = dbLinesAfterShift;
+    newDataBase{ds, 2} = dbLinesAfterShift;
     
-    % database data
+    % plot data
     ol1 = dataBase{ds, 2}{1, 1};
     ol2 = dataBase{ds, 2}{1, 2};
     
@@ -102,20 +105,20 @@ for ds = 1:numOfDataSet
     
     axis equal
     
-    % new data
+    
     ol1 = newData{ds, 2}{1, 1};
     ol2 = newData{ds, 2}{1, 2};
     
     plot(ol1(ol1(:, 3) == 1, 1), ol1(ol1(:, 3) == 1, 2), 'bo', 'MarkerSize', 3); hold on;
     plot(ol2(ol2(:, 3) == 1, 1), ol2(ol2(:, 3) == 1, 2), 'bo', 'MarkerSize', 3); hold on;
     
-    nl1 = dbLinesAfterShift{matchedLines{2}};
-    nl2 = dbLinesAfterShift{matchedLines{3}};
+    
+    nl1 = newDataBase{ds, 2}{1, 1};
+    nl2 = newDataBase{ds, 2}{1, 2};
     
     plot(nl1(:, 1), nl1(:, 2), 'c-', 'MarkerSize', 1); hold on;
     plot(nl2(:, 1), nl2(:, 2), 'c-', 'MarkerSize', 1); hold on;
     
-    plot(nl1(nl1(:, 3) == 1, 1), nl1(nl1(:, 3) == 1, 2), 'ro', 'MarkerSize', 3); hold on;
-    plot(nl2(nl2(:, 3) == 1, 1), nl2(nl2(:, 3) == 1, 2), 'ro', 'MarkerSize', 3); hold on;
-    
+    plot(nl1(nl1(:, 3) >= 0.5, 1), nl1(nl1(:, 3) >= 0.5, 2), 'ro', 'MarkerSize', 3); hold on;
+    plot(nl2(nl2(:, 3) >= 0.5, 1), nl2(nl2(:, 3) >= 0.5, 2), 'ro', 'MarkerSize', 3); hold on;
 end
