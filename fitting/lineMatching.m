@@ -1,6 +1,7 @@
-function matchedLines = lineMatching(dbLines, newLines)
+function [dx, dy, MC] = lineMatching(dbline, newline) 
 % LINEMATCHING
 %   line match for merging process
+%   matchedLines = lineMatching(dbline, newline)
 %
 %
 %   INPUT:
@@ -27,41 +28,41 @@ function matchedLines = lineMatching(dbLines, newLines)
 % ------------------------------------------------------------------------
 %
 
-% lane information
-laneNum = size(dbLines, 2) - 1;
+% % lane information
+% laneNum = size(dbLines, 2) - 1;
+% 
+% MC = zeros(laneNum, 1);
+% dx = cell(laneNum, 1);
+% dy = cell(laneNum, 1);
+% 
+% % try each possible lane to find the best match lane
+% for ln = 1:laneNum
+%     [dx1, dy1, MC1] = lineMatchAlign(dbLines{1, ln  }, newLines{1, 1});
+%     [dx2, dy2, MC2] = lineMatchAlign(dbLines{1, ln+1}, newLines{1, 2});
+%     MC(ln) = MC1 * MC2;
+%     dx{ln} = 0.5 * dx1 + 0.5 * dx2;
+%     dy{ln} = 0.5 * dy1 + 0.5 * dy2;
+% end
+% 
+% % maximum lane index
+% [~, laneInd] = max(MC);
+% 
+% % output initialization
+% matchedLines = cell(1, 3);
+% matchedLines{1, 2} = laneInd;
+% matchedLines{1, 3} = laneInd + 1;
+% 
+% % shift distance
+% D = cell(1, 2);
+% D{1, 1} = [0, 0];
+% D{1, 2} = [0, 0];
+% matchedLines{1, 1} = D;
+% 
+% end % end of function lineMatching
 
-MC = zeros(laneNum, 1);
-dx = cell(laneNum, 1);
-dy = cell(laneNum, 1);
 
-% try each possible lane to find the best match lane
-for ln = 1:laneNum
-    [dx1, dy1, MC1] = lineMatchAlign(dbLines{1, ln  }, newLines{1, 1});
-    [dx2, dy2, MC2] = lineMatchAlign(dbLines{1, ln+1}, newLines{1, 2});
-    MC(ln) = MC1 * MC2;
-    dx{ln} = 0.5 * dx1 + 0.5 * dx2;
-    dy{ln} = 0.5 * dy1 + 0.5 * dy2;
-end
-
-% maximum lane index
-[~, laneInd] = max(MC);
-
-% output initialization
-matchedLines = cell(1, 3);
-matchedLines{1, 2} = laneInd;
-matchedLines{1, 3} = laneInd + 1;
-
-% shift distance
-D = cell(1, 2);
-D{1, 1} = [0, 0];
-D{1, 2} = [0, 0];
-matchedLines{1, 1} = D;
-
-end % end of function lineMatching
-
-
-%%
-function [dx, dy, MC] = lineMatchAlign(dbline, newline)
+% %
+% function [dx, dy, MC] = lineMatchAlign(dbline, newline)
 %
 %
 
