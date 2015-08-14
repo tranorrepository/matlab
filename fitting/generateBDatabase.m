@@ -25,6 +25,13 @@ function bdatabase = generateBDatabase(segconfig, database, newdata)
 
 load('common.mat');
 
+color = cell(1, 3);
+color{1} = 'b';
+color{2} = 'g';
+color{3} = 'r';
+
+axislimit = [2000, 2200, 370, 500];
+
 % number of new data sections
 numOfNew = size(newdata, 1);
 
@@ -147,33 +154,43 @@ else
         end
     end
     
+    % % plot data
     if PLOT_ON
-        figure(11)
-        % % plot data
         if ~isempty(database{1, 2})
             for iii = 1:size(database{1, 2}, 2)
+                figure(400 + iii)
                 ol = database{1, 2}{1, iii};
                 if ~isempty(ol)
                     plot(ol{1}(ol{1}(:, PAINT_IND) == 1, X), ...
                         ol{1}(ol{1}(:, PAINT_IND) == 1, Y), ...
-                        'go', 'MarkerSize', 3); hold on;
+                        color{iii}, 'MarkerSize', 1); hold on;
                     plot(ol{2}(ol{2}(:, PAINT_IND) == 1, X), ...
                         ol{2}(ol{2}(:, PAINT_IND) == 1, Y), ...
-                        'go', 'MarkerSize', 3); hold on;
+                        color{iii}, 'MarkerSize', 1); hold on;
+                    axis equal;
                 end
+                st = sprintf('Lane %d, section %d', iii, segconfig{1, 1});
+                title(st);
+                axis(axislimit);
             end
         end
-        axis equal;
     end
     
     nl1 = newdata{1, 2}{1, 1};
     nl2 = newdata{1, 2}{1, 2};
     
     if PLOT_ON
-        plot(nl1(nl1(:, PAINT_IND) == 1, X), nl1(nl1(:, PAINT_IND) == 1, Y), ...
-            'bo', 'MarkerSize', 3); hold on;
-        plot(nl2(nl2(:, PAINT_IND) == 1, X), nl2(nl2(:, PAINT_IND) == 1, Y), ...
-            'bo', 'MarkerSize', 3); hold on;
+        figure(400 + matchedLane)
+        plot(nl1(nl1(:, PAINT_IND) == 1, X), ...
+             nl1(nl1(:, PAINT_IND) == 1, Y), ...
+            'k', 'MarkerSize', 1); hold on;
+        plot(nl2(nl2(:, PAINT_IND) == 1, X), ...
+             nl2(nl2(:, PAINT_IND) == 1, Y), ...
+            'k', 'MarkerSize', 1); hold on;
+        
+        st = sprintf('Lane %d, section %d', matchedLane, segconfig{1, 1});
+        title(st);
+        axis(axislimit);
     end
     
     % fitting for new data lines
@@ -199,4 +216,25 @@ else
         % update date base
         bdatabase{1, 2}{1, matchedLane} = dblines;
     end
+    
+    % merged lane
+    if PLOT_ON
+        figure(400 + matchedLane)
+        ol = bdatabase{1, 2}{1, matchedLane};
+        if ~isempty(ol)
+            plot(ol{1}(ol{1}(:, PAINT_IND) == 1, X), ...
+                ol{1}(ol{1}(:, PAINT_IND) == 1, Y), ...
+                'c', 'MarkerSize', 1); hold on;
+            plot(ol{2}(ol{2}(:, PAINT_IND) == 1, X), ...
+                ol{2}(ol{2}(:, PAINT_IND) == 1, Y), ...
+                'c', 'MarkerSize', 1); hold on;
+            axis equal; hold off;
+            st = sprintf('Lane %d, section %d', ...
+                         matchedLane, segconfig{1, 1});
+            title(st);
+            axis(axislimit);
+        end
+    end
+    
+    pause(1)
 end

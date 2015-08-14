@@ -2,12 +2,14 @@
 %
 %
 
+% close all; close all; clc
+
 load('common.mat');
 load('sectionConfig.mat');
-load('database0_1.mat');
-load('2.mat');
+load('database0.mat');
+% load('sectionsGroup.mat');
 
-newdata = matchReportData;
+newdata = sectionsDataOut;
 segconfig = stSection;
 
 % number of new data sections
@@ -34,19 +36,34 @@ fdatabase = cell(numOfSeg, 2);
 
 
 for ns = 1:numOfNew
-    % segment ID of new data
-    newSegID = newdata{ns, 1};
-    
-    if isempty(database{newSegID, 1})
-        database{newSegID, 1} = newSegID;
-    end
-    
-    % merge new data with backgound database
-    bdatabase(newSegID, :) = generateBDatabase(segconfig(newSegID, :), ...
-                                    database(newSegID, :), ...
-                                    newdata(ns, :));
+    if ~isempty(newdata{ns, 1})
+        % segment ID of new data
+        newSegID = newdata{ns, 1};
+        
+        if isempty(database{newSegID, 1})
+            database{newSegID, 1} = newSegID;
+        end
+        
+        temp = cell(1, 2);
+        temp{1, 1} = newSegID;
+        temp{1, 2} = cell(1, 2);
+        
+        numOfNewSets = size(newdata(ns, :), 2) - 1;
+        
+        for ii = 2:numOfNewSets+1
+            if ~(isempty(newdata{ns, ii}))
+                temp{1, 2}{1, 1} = newdata{ns, ii}{1, 1}{1, 2};
+                temp{1, 2}{1, 2} = newdata{ns, ii}{1, 2}{1, 2};
+                
+                % merge new data with backgound database
+                bdatabase(newSegID, :) = ...
+                    generateBDatabase(segconfig(newSegID, :), ...
+                                      bdatabase(newSegID, :), temp);
 
-    % foreground database
-    fdatabase(newSegID, :) = generateFDatabase(bdatabase(newSegID, :));
-    
+                
+% foreground database
+%     fdatabase(newSegID, :) = generateFDatabase(bdatabase(newSegID, :));
+            end
+        end
+    end
 end % end of segment iteration
