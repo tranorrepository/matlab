@@ -1,4 +1,4 @@
-function [pp, type, s, degree] = getPolyFitParams(validData)
+function [pp, type, s, degree, mu] = getPolyFitParams(validData)
 % GETPOLYFITPARAMS
 %
 % get polynomial fitting parameters
@@ -18,28 +18,30 @@ load('common.mat');
 
 degree = FIT_DEGREE;
 
-[pXY, sXY] = polyfit(validData(:, X), validData(:, Y), round(degree));
-[~, delXY] = polyval(pXY, validData(:, X), sXY);
+[pXY, sXY, muXY] = polyfit(validData(:, X), validData(:, Y), round(degree));
+[~, delXY] = polyval(pXY, validData(:, X), sXY, muXY);
 
-[pYX, sYX] = polyfit(validData(:, Y), validData(:, X), round(degree));
-[~, delYX] = polyval(pYX, validData(:, Y), sYX);
+[pYX, sYX, muYX] = polyfit(validData(:, Y), validData(:, X), round(degree));
+[~, delYX] = polyval(pYX, validData(:, Y), sYX, muYX);
 
 if sum(abs(delXY)) > sum(abs(delYX))
     while(sYX.normr > FIT_TH && degree < MAX_FIT_DEGREE)
         degree = degree + 1;
-        [pYX, sYX] = polyfit(validData(:, Y), validData(:, X), degree);
+        [pYX, sYX, muYX] = polyfit(validData(:, Y), validData(:, X), degree);
     end
     
     pp   = pYX;
     type = FIT_YX;
     s    = sYX;
+    mu   = muYX;
 else
     while(sXY.normr > FIT_TH && degree < MAX_FIT_DEGREE)
         degree = degree + 1;
-        [pXY, sXY] = polyfit(validData(:, X), validData(:, Y), degree);
+        [pXY, sXY, muXY] = polyfit(validData(:, X), validData(:, Y), degree);
     end
     
     pp   = pXY;
     type = FIT_XY;
     s    = sXY;
+    mu   = muXY;
 end

@@ -1,4 +1,4 @@
-% TEST.M
+% TEST_2.M
 %
 %
 %
@@ -164,7 +164,7 @@ for ns = 1:numOfNew
             if ~isempty(ol)
                 plot(ol(ol(:, PAINT_IND) == 1, X), ...
                     ol(ol(:, PAINT_IND) == 1, Y), ...
-                    'k.', 'MarkerSize', 1); hold on;
+                    'go', 'MarkerSize', 3); hold on;
             end
         end
     end
@@ -173,9 +173,9 @@ for ns = 1:numOfNew
     nl1 = newdata{ns, 2}{1, 1};
     nl2 = newdata{ns, 2}{1, 2};
     plot(nl1(nl1(:, PAINT_IND) == 1, X), nl1(nl1(:, PAINT_IND) == 1, Y), ...
-         'b.', 'MarkerSize', 1); hold on;
+         'bo', 'MarkerSize', 3); hold on;
     plot(nl2(nl2(:, PAINT_IND) == 1, X), nl2(nl2(:, PAINT_IND) == 1, Y), ...
-         'b.', 'MarkerSize', 1); hold on;
+         'bo', 'MarkerSize', 3); hold on;
     
     % fitting for new data lines
     newlines = lineFitting(newdata{ns, 2});
@@ -268,7 +268,8 @@ for ns = 1:numOfNew
         % line merging
         dblinesShift{1, matchedLane} = lineMerging(dblinesShift{1, matchedLane}, ...
                                                    newlinesShift{1, 1});
-        dblinesShift{1, matchedLane + 1} = newlinesShift{1, 2};
+        dblinesShift{1, matchedLane + 1} = lineMerging(dblinesShift{1, matchedLane +1}, ...
+                                                   newlinesShift{1, 2});
         
         % update date base
         database{newSegID, 2} = dblinesShift;
@@ -280,7 +281,7 @@ for ns = 1:numOfNew
         if ~isempty(ol)
             plot(ol(ol(:, PAINT_IND) == 1, X), ...
                 ol(ol(:, PAINT_IND) == 1, Y), ...
-                'ro', 'MarkerSize', 1); hold on;
+                'ro', 'MarkerSize', 3); hold on;
         end
     end
     

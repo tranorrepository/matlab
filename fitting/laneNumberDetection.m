@@ -1,4 +1,4 @@
-function value = laneNumberDetection(line, minDist, plot_on) 
+function value = laneNumberDetection(line, minDist, plot_on_off) 
 % LANENUMBERDETCTION
 %   Detect the lane number, currently, it is just for the Frankford demo.
 %
@@ -29,7 +29,7 @@ y0 = line(:, Y);
 
 validIndex0 = find(inline(:, PAINT_FLAG) == 1);
 
-if plot_on
+if plot_on_off
     figure(40)
     hold off
     plot(x0(validIndex0), y0(validIndex0), 'b.');
@@ -48,7 +48,7 @@ lengthList = dotBlkIndex1(:,2) - dotBlkIndex1(:,1);
 meanV = round(mean(lengthList));
 stdV  = round(std(lengthList));
 
-if plot_on
+if plot_on_off
     figure(1)
     edges = 0:5:300;
     h = histogram(lengthList,edges,'Normalization','probability');

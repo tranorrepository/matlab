@@ -26,7 +26,8 @@ newLines = cell(1, numOfLines);
 for ln = 1:numOfLines
     line = linesData{1, ln};
     % exclude invalid data
-    validData = line(line(:, PAINT_IND) ~= INVALID_FLAG, :);
+    % fixed by bingtao 
+    validData = line(line(:, PAINT_IND) == 1, :);
     
     % initialize output data
     newLines{1, ln} = line;
@@ -34,7 +35,7 @@ for ln = 1:numOfLines
     % step 1 - curve fitting
     % currently use polynomial to do curve fitting, other method should be
     % used
-    [pp, fitType, s, ~] = getPolyFitParams(validData);
+    [pp, fitType, s, ~, mu] = getPolyFitParams(validData);
     
 %     [pXY, sXY] = polyfit(validData(:, X), validData(:, Y), FIT_DEGREE);
 %     [~, delXY] = polyval(pXY, validData(:, X), sXY);
@@ -53,6 +54,23 @@ for ln = 1:numOfLines
     % step 2 - remapping data
     % map input points to the closest points on the curve fitted
     
-    closestPoints = mapCurveClosestPoint(pp, line, fitType, s);
+    closestPoints = mapCurveClosestPoint(pp, line, fitType, s, mu);
     newLines{1, ln}(:, 1:2) = closestPoints(:, 1:2);
+    
+    if PLOT_ON
+        figure(201)
+        
+        % original dadta
+        plot(line(line(:, PAINT_IND) == 1, X), ...
+             line(line(:, PAINT_IND) == 1, Y), ...
+             'bo', 'MarkerSize', 3); hold on;
+        
+        if fitType == FIT_XY
+            py = polyval(pp, validData(:, X), s, mu);
+            plot(validData(:, X), py, 'c'); axis equal;
+        else
+            px = polyval(pp, validData(:, Y), s, mu);
+            plot(px, validData(:, Y), 'c'); axis equal;
+        end
+    end
 end

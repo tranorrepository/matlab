@@ -1,4 +1,4 @@
-function sampleLine = lineMerging(dbLine, newLine)
+function [sampleLine, vec] = lineMerging(dbLine, newLine)
 % LINEMERGING
 %   merge two input lines
 %
@@ -27,16 +27,33 @@ numOfPoints = size(dbLine, 1);
 
 matchIndex = zeros(numOfPoints, 1);
 tempData = zeros(numOfPoints, 4);
+tempMove = zeros(numOfPoints, 4);
 for p = 1:numOfPoints
     if dbLine(p, 3) ~= INVALID_FLAG
         matchIndex(p) = minDistIndex(dbLine(p, 1:2), newLine);
         tempData(p, 1:3) =      R * dbLine(p, 1:3) + ...
                           (1 - R) * newLine(matchIndex(p), 1:3);
+        
+        tempMove(p, 1:2) = tempData(p, 1:2) - dbLine(p, 1:2);
+        tempMove(p, 3:4) = tempData(p, 1:2) - newLine(matchIndex(p), 1:2);
     end
 end
 
+% shift vector
+vec = mean(tempMove(:, 1:4));
+
 % resample for output
 tempLine = resampling(tempData);
+
+if PLOT_ON
+    figure(301)
+    plot(dbLine(dbLine(:, 3) == 1, X), dbLine(dbLine(:, 3) == 1, Y), 'k');
+    hold on;
+    plot(newLine(newLine(:, 3) == 1, X), newLine(newLine(:, 3) == 1, Y), ...
+        'b'); hold on;
+    plot(tempLine(:, X), tempLine(:, Y), 'm'); hold on;
+    axis equal;
+end
 
 % add point paint attribute
 sampleLine = getPaintInfo(dbLine, newLine, tempLine);
