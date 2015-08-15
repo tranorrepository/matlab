@@ -23,19 +23,34 @@ avgMergedCnt = floor(mean(dbLine(:, MERGED_IND)));
 R = reliability(avgMergedCnt);
 
 % closest data point matching
+% number of valid paint points
+numOfDBVP  = sum(dbLine(:, PAINT_IND) ~= INVALID_FLAG);
+numOfNewVP = sum(newLine(:, PAINT_IND) ~= INVALID_FLAG);
+
 numOfPoints = size(dbLine, 1);
+minLine = newLine;
+maxLine = dbLine;
+if numOfDBVP < numOfNewVP
+    numOfPoints = size(newLine, 1);
+    minLine = dbLine;
+    maxLine = newLine;
+end
 
 matchIndex = zeros(numOfPoints, 1);
 tempData = zeros(numOfPoints, 4);
 tempMove = zeros(numOfPoints, 4);
 for p = 1:numOfPoints
-    if dbLine(p, 3) ~= INVALID_FLAG
-        matchIndex(p) = minDistIndex(dbLine(p, 1:2), newLine);
-        tempData(p, 1:3) =      R * dbLine(p, 1:3) + ...
-                          (1 - R) * newLine(matchIndex(p), 1:3);
-        
-        tempMove(p, 1:2) = tempData(p, 1:2) - dbLine(p, 1:2);
-        tempMove(p, 3:4) = tempData(p, 1:2) - newLine(matchIndex(p), 1:2);
+    if maxLine(p, 3) >= 0 %~= INVALID_FLAG
+        matchIndex(p) = minDistIndex(maxLine(p, 1:2), minLine);
+        tempData(p, 1:3) =      R * maxLine(p, 1:3) + ...
+                          (1 - R) * minLine(matchIndex(p), 1:3);
+        if numOfDBVP > numOfNewVP
+            tempMove(p, 1:2) = tempData(p, 1:2) - dbLine(p, 1:2);
+            tempMove(p, 3:4) = tempData(p, 1:2) - newLine(matchIndex(p), 1:2);
+        else            
+            tempMove(p, 1:2) = tempData(p, 1:2) - dbLine(matchIndex(p), 1:2);
+            tempMove(p, 3:4) = tempData(p, 1:2) - newLine(p, 1:2);
+        end
     end
 end
 
@@ -47,10 +62,10 @@ tempLine = resampling(tempData);
 
 if PLOT_ON
     figure(301)
-    plot(dbLine(dbLine(:, 3) == 1, X), dbLine(dbLine(:, 3) == 1, Y), 'k');
+    plot(dbLine(dbLine(:, 3) == 1, X), dbLine(dbLine(:, 3) == 1, Y), 'k.');
     hold on;
     plot(newLine(newLine(:, 3) == 1, X), newLine(newLine(:, 3) == 1, Y), ...
-        'b'); hold on;
+        'b.'); hold on;
     plot(tempLine(:, X), tempLine(:, Y), 'm'); hold on;
     axis equal;
 end
@@ -58,6 +73,10 @@ end
 % add point paint attribute
 sampleLine = getPaintInfo(dbLine, newLine, tempLine);
 
+if PLOT_ON
+    figure(301);
+    hold off;
+end
 
 %%
 function newLine = resampling(lineData)
@@ -84,7 +103,8 @@ numOfPoints = size(lineData, 1);
 
 % output initialization
 index = 1;
-while lineData(index, 1) == 0 && ...
+while index <= numOfPoints && ...
+      lineData(index, 1) == 0 && ...
       lineData(index, 2) == 0
       index = index + 1;
 end
@@ -125,139 +145,55 @@ function paintLine =  getPaintInfo(dbLine, newLine, sampleLine)
 %
 
 load('common.mat');
+avgMergedCnt = floor(mean(dbLine(:, MERGED_IND)));
+
+paintLine = sampleLine;
+paintLine(:, 4) = avgMergedCnt + 1;
+return;
+
 
 avgMergedCnt = floor(mean(dbLine(:, MERGED_IND)));
 
-% reliability of merged times
-R = reliability(avgMergedCnt);
-
-% get block start/end index
-dbBlk  = dotLineBlockIndex(dbLine);
-newBlk = dotLineBlockIndex(newLine);
-
-% number of blocks
-numDBBlk  = size(dbBlk, 1);
-numNewBlk = size(newBlk, 1);
-
-% start, end, quadratic sum
-dbMatchedInd  = zeros(numDBBlk, 3);
-newMatchedInd = zeros(numNewBlk, 3);
-
-for nb = 1:numDBBlk
-    dbMatchedInd(nb, 1) = minDistIndex(dbLine(dbBlk(nb, 1), 1:2), ...
-                                       sampleLine);
-    dbMatchedInd(nb, 2) = minDistIndex(dbLine(dbBlk(nb, 2), 1:2), ...
-                                       sampleLine);
-	dbMatchedInd(nb, 3) = sum((sampleLine(dbMatchedInd(nb, 1)) - ...
-                               sampleLine(dbMatchedInd(nb, 2))) .^ 2);
-end
-for nb = 1:numNewBlk
-    newMatchedInd(nb, 1) = minDistIndex(newLine(newBlk(nb, 1), 1:2), ...
-                                        sampleLine);
-    newMatchedInd(nb, 2) = minDistIndex(newLine(newBlk(nb, 2), 1:2), ...
-                                        sampleLine);
-	newMatchedInd(nb, 3) = sum((sampleLine(newMatchedInd(nb, 1)) - ...
-                                sampleLine(newMatchedInd(nb, 2))) .^ 2);
-end
-
-% end points
-dbStarts  = sampleLine(dbMatchedInd(:, 1), 1:2);
-dbStops   = sampleLine(dbMatchedInd(:, 2), 1:2);
-newStarts = sampleLine(newMatchedInd(:, 1), 1:2);
-newStops  = sampleLine(newMatchedInd(:, 2), 1:2);
-
-% length of painted dash lines
-newDist = sqrt(sum((newStarts(:, 1:2)' - newStops(:, 1:2)') .^ 2))';
-
-starts = zeros(numDBBlk, 2);
-stops  = zeros(numDBBlk, 2);
-
-startInd = zeros(numDBBlk, 1);
-stopInd = zeros(numDBBlk, 1);
-
-% match less block to more block
-for nb = 1:numDBBlk
-    startInd(nb) = minDistIndex(dbStarts(nb, 1:2), newStarts);
-    stopInd(nb)  = minDistIndex(dbStops(nb, 1:2), newStops);
-    
-    dist = sqrt(sum((dbStarts(nb, 1:2) - newStarts(startInd(nb), 1:2)) .^ 2));
-    
-    if dist < newDist(startInd(nb))
-        starts(nb, 1:2) = R * dbStarts(nb, 1:2) + ...
-            (1 - R) * newStarts(startInd(nb), 1:2);
-        stops(nb, 1:2) = R * dbStops(nb, 1:2) + ...
-            (1 - R) * newStops(stopInd(nb), 1:2);
-    else
-        starts(nb, 1:2) = dbStarts(nb, 1:2);
-        stops(nb, 1:2) = dbStops(nb, 1:2);
-    end
-end
-
-% one new dash block is no matching
-for nn = 1:numNewBlk
-    if isempty(find(nn == startInd, 1))
-        numDBBlk = numDBBlk + 1;
-        starts(numDBBlk, 1:2) = newStarts(nn, 1:2);
-        stops(numDBBlk, 1:2) = newStops(nn, 1:2);
-    end
-end
-
-% num of points
-numOfPoints = size(sampleLine, 1);
-
-% initialize output
-paintLine = zeros(numOfPoints, 4);
-
-paintLine(:, 1:3) = sampleLine(:, 1:3);
-paintLine(:, 4)  = avgMergedCnt + 1;
+% init output
+paintLine = sampleLine;
+paintLine(:, 4) = avgMergedCnt + 1;
 
 linetype = getLineType(dbLine);
 
 if DASH_LINE == linetype
+    % get block start/end index
+    dbBlk  = dotLineBlockIndex(dbLine);
+    newBlk = dotLineBlockIndex(newLine);
+    
+    % number of blocks
+    numDBBlk  = size(dbBlk, 1);
+    numNewBlk = size(newBlk, 1);
+    
+    % length of each block
+    dbLen  = dbBlk(:, 2) - dbBlk(:, 1);
+    newLen = newBlk(:, 2) - newBlk(:, 1);
+    
+    avgPaintCnt = round(0.5 * round(mean(dbLen)) + 0.5 * round(mean(newLen)));
+    numBlk = round(0.5 * numDBBlk + 0.5 * numNewBlk);
+    
+    numOfPoints = size(sampleLine, 1);
+    avgNonPaintCnt = round((numOfPoints - avgPaintCnt * numBlk) / numBlk);
+    % remainCnt = numOfPoints - (avgNonPaintCnt + avgPaintCnt) * numBlk;
+
+    
+    index = 1;
+    for nb = 1:numBlk
+        paintLine(index : index + avgPaintCnt - 1, 3) = 1;
+        index = index + nb * (avgPaintCnt + avgNonPaintCnt);
+    end
+    
     for np = 1:numOfPoints
-        lx = sampleLine(np, X);
-        nb = 1;
-        while (nb <= numDBBlk)
-            if (((starts(nb, X) < stops(nb, X)) && ...
-                    (starts(nb, X) <= lx) && (stops(nb, X) > lx)) || ...
-                ((starts(nb, X) > stops(nb, X)) && ...
-                    (starts(nb, X) >= lx) && (lx > stops(nb, X))))
-               break;
-            else
-                nb = nb + 1;
-            end
-        end
-        
-        if nb > numDBBlk
-            paintLine(np, 3) = 0;
-        else
+        index = mod(np, (avgPaintCnt + avgNonPaintCnt));
+        if index >= 1 && index <= avgPaintCnt
             paintLine(np, 3) = 1;
         end
     end
-else
-%     for np = 1:numOfPoints
-%         lx = sampleLine(np, X);
-%         nb = 1;
-%         while (nb <= numDBBlk)
-%             if (((starts(nb, X) < stops(nb, X)) && ...
-%                     (starts(nb, X) <= lx) && (stops(nb, X) > lx)) || ...
-%                 ((starts(nb, X) > stops(nb, X)) && ...
-%                     (starts(nb, X) >= lx) && (lx > stops(nb, X))))
-%                break;
-%             else
-%                 nb = nb + 1;
-%             end
-%         end
-%         
-%         if nb > numDBBlk
-%             paintLine(np, 3) = 0;
-%         else
-%             paintLine(np, 3) = 1;
-%         end
-%     end
 end
-
-
 
 %%
 function index = minDistIndex(point, line)

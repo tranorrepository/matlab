@@ -64,6 +64,9 @@ for ln = 1:numOfLines
         plot(line(line(:, PAINT_IND) == 1, X), ...
              line(line(:, PAINT_IND) == 1, Y), ...
              'bo', 'MarkerSize', 3); hold on;
+        plot(line(line(:, PAINT_IND) == 0, X), ...
+             line(line(:, PAINT_IND) == 0, Y), ...
+             'k.', 'MarkerSize', 1); hold on;
         
         if fitType == FIT_XY
             py = polyval(pp, validData(:, X), s, mu);
@@ -73,4 +76,9 @@ for ln = 1:numOfLines
             plot(px, validData(:, Y), 'c'); axis equal;
         end
     end
+end
+
+if PLOT_ON
+    figure(201)
+    hold off;
 end

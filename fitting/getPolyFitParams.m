@@ -16,7 +16,7 @@ function [pp, type, s, degree, mu] = getPolyFitParams(validData)
 
 load('common.mat');
 
-degree = FIT_DEGREE;
+degree = 10;
 
 [pXY, sXY, muXY] = polyfit(validData(:, X), validData(:, Y), round(degree));
 [~, delXY] = polyval(pXY, validData(:, X), sXY, muXY);

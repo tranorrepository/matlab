@@ -17,9 +17,9 @@ function fdatabase = generateFDatabase(database)
 load('common.mat');
 
 color = cell(1, 3);
-color{1, 1} = 'b';
-color{1, 2} = 'g';
-color{1, 3} = 'c';
+color{1, 1} = 'b.';
+color{1, 2} = 'g.';
+color{1, 3} = 'c.';
 
 % number of database segment
 numOfDB = size(database, 1);
@@ -89,10 +89,10 @@ for ns = 1:numOfDB
             if ~isempty(database{ns, 2}{1, ll})
                 ol1 = database{ns, 2}{1, ll}{1, 1};
                 ol2 = database{ns, 2}{1, ll}{1, 2};
-                plot(ol1(ol1(:, 3) ~= INVALID_FLAG, X), ...
-                    ol1(ol1(:, 3) ~= INVALID_FLAG, Y), color{ll}); hold on;
-                plot(ol2(ol2(:, 3) ~= INVALID_FLAG, X), ...
-                    ol2(ol2(:, 3) ~= INVALID_FLAG, Y), color{ll}); hold on;
+                plot(ol1(ol1(:, 3) > 0, X), ...
+                    ol1(ol1(:, 3) > 0, Y), color{ll}); hold on;
+                plot(ol2(ol2(:, 3) > 0, X), ...
+                    ol2(ol2(:, 3) > 0, Y), color{ll}); hold on;
             end
         end
         
@@ -102,11 +102,15 @@ for ns = 1:numOfDB
         for ll = 1:numOfLanes+1
             ol = fdatabase{ns, 2}{1, ll};
             if ~isempty(ol)
-                plot(ol(ol(:, PAINT_IND) ~= INVALID_FLAG, X), ...
-                    ol(ol(:, PAINT_IND) ~= INVALID_FLAG, Y), ...
-                    'r', 'MarkerSize', 3); hold on;
+                plot(ol(ol(:, PAINT_IND) > 0, X), ...
+                    ol(ol(:, PAINT_IND) > 0, Y), ...
+                    'r.', 'MarkerSize', 3); hold on;
             end
         end
         
     end
+end
+
+if PLOT_ON
+    figure(100); hold off;
 end

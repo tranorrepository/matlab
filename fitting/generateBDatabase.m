@@ -30,7 +30,7 @@ color{1} = 'b';
 color{2} = 'g';
 color{3} = 'r';
 
-axislimit = [2000, 2200, 370, 500];
+% axislimit = [2000, 2200, 370, 500];
 
 % number of new data sections
 numOfNew = size(newdata, 1);
@@ -69,7 +69,7 @@ if isempty(database{1, 2})
     
     % init database lane info
     % two lines for each lane
-    database{1, 2} = cell(1, numOfLanes);
+    bdatabase{1, 2} = cell(1, numOfLanes);
     
     % line type of new data lines
     ltype = getLineType(newdata{1, 2}{1, 1});
@@ -155,23 +155,25 @@ else
     end
     
     % % plot data
-    if PLOT_ON
+    if PLOT_ON == 0
         if ~isempty(database{1, 2})
             for iii = 1:size(database{1, 2}, 2)
                 figure(400 + iii)
                 ol = database{1, 2}{1, iii};
                 if ~isempty(ol)
-                    plot(ol{1}(ol{1}(:, PAINT_IND) == 1, X), ...
-                        ol{1}(ol{1}(:, PAINT_IND) == 1, Y), ...
-                        color{iii}, 'MarkerSize', 1); hold on;
-                    plot(ol{2}(ol{2}(:, PAINT_IND) == 1, X), ...
-                        ol{2}(ol{2}(:, PAINT_IND) == 1, Y), ...
-                        color{iii}, 'MarkerSize', 1); hold on;
+                    plot(ol{1}(ol{1}(:, PAINT_IND) > 0, X), ...
+                        ol{1}(ol{1}(:, PAINT_IND) > 0, Y), ...
+                        color{iii}, 'MarkerSize', 3); hold on;
+                    plot(ol{2}(ol{2}(:, PAINT_IND) > 0, X), ...
+                        ol{2}(ol{2}(:, PAINT_IND) > 0, Y), ...
+                        color{iii}, 'MarkerSize', 3); hold on;
                     axis equal;
+                else
+                    clf(figure(400 + iii));
                 end
                 st = sprintf('Lane %d, section %d', iii, segconfig{1, 1});
                 title(st);
-                axis(axislimit);
+%                 axis(axislimit);
             end
         end
     end
@@ -179,18 +181,19 @@ else
     nl1 = newdata{1, 2}{1, 1};
     nl2 = newdata{1, 2}{1, 2};
     
-    if PLOT_ON
+    if PLOT_ON == 0
         figure(400 + matchedLane)
         plot(nl1(nl1(:, PAINT_IND) == 1, X), ...
              nl1(nl1(:, PAINT_IND) == 1, Y), ...
-            'k', 'MarkerSize', 1); hold on;
+            'k.', 'MarkerSize', 1); hold on;
         plot(nl2(nl2(:, PAINT_IND) == 1, X), ...
              nl2(nl2(:, PAINT_IND) == 1, Y), ...
-            'k', 'MarkerSize', 1); hold on;
+            'k.', 'MarkerSize', 1); hold on;
+        axis equal;
         
         st = sprintf('Lane %d, section %d', matchedLane, segconfig{1, 1});
         title(st);
-        axis(axislimit);
+%         axis(axislimit);
     end
     
     % fitting for new data lines
@@ -222,19 +225,20 @@ else
         figure(400 + matchedLane)
         ol = bdatabase{1, 2}{1, matchedLane};
         if ~isempty(ol)
-            plot(ol{1}(ol{1}(:, PAINT_IND) == 1, X), ...
-                ol{1}(ol{1}(:, PAINT_IND) == 1, Y), ...
-                'c', 'MarkerSize', 1); hold on;
-            plot(ol{2}(ol{2}(:, PAINT_IND) == 1, X), ...
-                ol{2}(ol{2}(:, PAINT_IND) == 1, Y), ...
-                'c', 'MarkerSize', 1); hold on;
+            plot(ol{1}(ol{1}(:, PAINT_IND) >= 0, X), ...
+                ol{1}(ol{1}(:, PAINT_IND) >= 0, Y), ...
+                color{matchedLane}, 'MarkerSize', 3); hold on;
+            plot(ol{2}(ol{2}(:, PAINT_IND) >= 0, X), ...
+                ol{2}(ol{2}(:, PAINT_IND) >= 0, Y), ...
+                color{matchedLane}, 'MarkerSize', 3); hold on;
             axis equal; hold off;
             st = sprintf('Lane %d, section %d', ...
                          matchedLane, segconfig{1, 1});
             title(st);
-            axis(axislimit);
+%             axis(axislimit);
         end
+        hold off;
     end
     
-    pause(1)
+    pause(0.1)
 end

@@ -75,7 +75,7 @@ else
         P0(Y) = line(np, Y);
         
         % only check valid points
-        if line(np, 3) ~= INVALID_FLAG
+        if line(np, 3) > 0
             P1(Y) = P0(Y);
             P1(X) = polyval(pp, P1(Y), s, mu);
             

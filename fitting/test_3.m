@@ -2,12 +2,22 @@
 %
 %
 
-% close all; close all; clc
+% clear all; clc
+% close all
 
 load('common.mat');
 load('sectionConfig.mat');
 load('database0.mat');
-% load('sectionsGroup.mat');
+load('sectionsGroup_0815_1.mat');
+
+if PLOT_ON
+    clf(figure(100))
+    clf(figure(201));
+    clf(figure(301));
+    clf(figure(401));
+    clf(figure(402));
+    clf(figure(403));
+end
 
 newdata = sectionsDataOut;
 segconfig = stSection;
@@ -34,14 +44,20 @@ bdatabase = database;
 % init foreground database
 fdatabase = cell(numOfSeg, 2);
 
-
+times = 1;
+while(1)
+    display(times)
+    times = times + 1;
 for ns = 1:numOfNew
     if ~isempty(newdata{ns, 1})
         % segment ID of new data
         newSegID = newdata{ns, 1};
+        if (11 == newSegID || 8 == newSegID)
+            continue;
+        end
         
-        if isempty(database{newSegID, 1})
-            database{newSegID, 1} = newSegID;
+        if isempty(bdatabase{newSegID, 1})
+            bdatabase{newSegID, 1} = newSegID;
         end
         
         temp = cell(1, 2);
@@ -59,11 +75,10 @@ for ns = 1:numOfNew
                 bdatabase(newSegID, :) = ...
                     generateBDatabase(segconfig(newSegID, :), ...
                                       bdatabase(newSegID, :), temp);
-
-                
-% foreground database
-%     fdatabase(newSegID, :) = generateFDatabase(bdatabase(newSegID, :));
             end
         end
+        % foreground database
+        % fdatabase(newSegID, :) = generateFDatabase(bdatabase(newSegID, :));
     end
 end % end of segment iteration
+end
