@@ -57,7 +57,7 @@ for ln = 1:numOfLines
     closestPoints = mapCurveClosestPoint(pp, line, fitType, s, mu);
     newLines{1, ln}(:, 1:2) = closestPoints(:, 1:2);
     
-    if PLOT_ON
+    if 0 %PLOT_ON
         figure(201)
         
         % original dadta
@@ -78,7 +78,7 @@ for ln = 1:numOfLines
     end
 end
 
-if PLOT_ON
+if 0% PLOT_ON
     figure(201)
     hold off;
 end

@@ -60,7 +60,7 @@ vec = mean(tempMove(:, 1:4));
 % resample for output
 tempLine = resampling(tempData);
 
-if PLOT_ON
+if 0 %PLOT_ON
     figure(301)
     plot(dbLine(dbLine(:, 3) == 1, X), dbLine(dbLine(:, 3) == 1, Y), 'k.');
     hold on;
@@ -73,7 +73,7 @@ end
 % add point paint attribute
 sampleLine = getPaintInfo(dbLine, newLine, tempLine);
 
-if PLOT_ON
+if 0%PLOT_ON
     figure(301);
     hold off;
 end
