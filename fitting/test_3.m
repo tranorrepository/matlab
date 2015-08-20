@@ -14,6 +14,8 @@ load('sectionConfig.mat');
 load('sectionsGroup_0815_1.mat');
 
 if PLOT_ON    
+    
+    clf(figure(300));
     clf(figure(400));
        
     clf(figure(501));
@@ -48,7 +50,7 @@ bdatabase = database;
 fdatabase = cell(numOfSeg, 2);
 
 times = 1;
-for kk = 1:50
+for kk = 1:100
     display(times)
     times = times + 1;
     clf(figure(503));
@@ -58,11 +60,7 @@ for ns = 1:21
     if ~isempty(newdata{ns, 1})
         % segment ID of new data
         newSegID = newdata{ns, 1}
-       % if (12 == newSegID || 11 == newSegID || 8 == newSegID)
-%        if (8 == newSegID)
-%             continue;
-%         end
-        
+       
         if isempty(bdatabase{newSegID, 1})
             bdatabase{newSegID, 1} = newSegID;
         end
@@ -77,7 +75,7 @@ for ns = 1:21
         [theta, X]= calcRotationAngle(segconfig,newSegID); 
         %theta = theta + pi/4;
         %%
-        for jj = 1:1
+        for jj = 1:3
             a = 2;
             b = numOfNewSets+1;
             ii = round((b-a).*rand(1,1) + a);

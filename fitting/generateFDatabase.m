@@ -60,13 +60,15 @@ end
 
 %% data fitting
 if Xrange(3) < Xrange(4)
-    xlist = Xrange(3):0.05:Xrange(4);
+    xlist = Xrange(3):0.1:Xrange(4);
 else
-    xlist = Xrange(3):-0.05:Xrange(4);
+    xlist = Xrange(3):-0.1:Xrange(4);
 end
 
 A = zeros(length(xlist),numOfLanes*2);
 ind = 1;
+M = zeros(length(xlist),numOfLanes*2);
+
 for lane = validLaneIndex(validLaneIndex>0)
     % first line     
     x = database{1, 2}{1,lane}{1,1}(:,1);
@@ -74,13 +76,20 @@ for lane = validLaneIndex(validLaneIndex>0)
     index = intersect(find(x),find(y));
     [p, S, mu] = polyfit(x(index),y(index),fitOrder);
     [A(:,ind*2-1), ~] = polyval(p, xlist, S, mu);
+
+    % Get painting for the lane
+    M(:,ind*2-1) = database{1, 2}{1,lane}{1,1}(:,3);
     
     % second line
     x = database{1, 2}{1,lane}{1,2}(:,1);
     y = database{1, 2}{1,lane}{1,2}(:,2);
     index = intersect(find(x),find(y));
     [p, S, mu] = polyfit(x(index),y(index),fitOrder);   
-    [A(:,ind*2), ~] = polyval(p, xlist, S, mu);
+    A(:,ind*2) = polyval(p, xlist, S, mu);
+     
+    % Get painting for the lane.
+    M(:,ind*2) = database{1, 2}{1,lane}{1,2}(:,3);
+      
     ind = ind + 1;
 end
 
@@ -103,12 +112,19 @@ if (numOfLanes == 0)
 elseif (numOfLanes == 1)
     B(:,1) = A(:,1);
     B(:,2) = A(:,2);
+    
+    N(:,1) = M(:,1);
+    N(:,2) = M(:,2);
 elseif  (numOfLanes == 2)
     d0 = middleLine{1,1} - A(:,2);
     d1 = middleLine{1,1} - A(:,3);
     B(:,1) = A(:,1)+ d0;
     B(:,2) = middleLine{1,1};
     B(:,3) = A(:,4)+ d1;
+    
+    N(:,1) = M(:,1);
+    N(:,2) = M(:,2) + M(:,3);
+    N(:,3) = M(:,4);
     
 elseif (numOfLanes == 3)
     d0 = middleLine{1,1} - A(:,2);
@@ -121,6 +137,11 @@ elseif (numOfLanes == 3)
     B(:,2) = middleLine{1,1}+d2;
     B(:,3) = middleLine{1,2}+d1;
     B(:,4) = A(:,6)+ d1 + d3;
+    
+    N(:,1) = M(:,1);
+    N(:,2) = M(:,2) + M(:,3);
+    N(:,3) = M(:,4) + M(:,5);
+    N(:,4) = M(:,6);
 else
     warning('Do not support more than 3 lane yet.');
     return;
@@ -146,17 +167,14 @@ for lane = 1:numOfLanes+1
     lineIn.x = xlist(index)';
     lineIn.y = B(index,lane);
     lineOut = rotline(lineIn,theta);
-    fdatabase{1, 2}{1,lane} = [lineOut.x lineOut.y];
+    p = N(index,lane);
+    fdatabase{1, 2}{1,lane} = [lineOut.x lineOut.y p];
     
-    % fixme later!
-    if lane == 1
-        %   fdatabase{lane, 2}(:,3) = database{1,2}{1,1};
-        %   fdatabase{lane, 2}(:,4) = lineOut.y;
-    else
-    end
-    plot(lineOut.x,lineOut.y,'-.');
+    ind0 =  (p/max(p)) >= 0.5;  
+    ind1 =  (p/max(p)) < 0.5;  
+    plot(lineOut.x(ind0),lineOut.y(ind0),'.',lineOut.x,lineOut.y,'-');
     hold on
-    grid on
+    grid on   
     axis equal;
 end
  % hold on

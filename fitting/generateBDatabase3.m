@@ -29,9 +29,9 @@ segID = segconfig{1,1};
 fitFlag = (8 == segID)|(segID == 9)|(segID == 10)|(segID == 11) |(segID == 12)|(20 == segID)|(21 == segID)|(1 == segID);
 
 if Xrange(3) < Xrange(4)
-    xlist = Xrange(3):0.05:Xrange(4);
+    xlist = Xrange(3):0.1:Xrange(4);
 else
-    xlist = Xrange(3):-0.05:Xrange(4);
+    xlist = Xrange(3):-0.1:Xrange(4);
 end
 
 bdatabase = database;
@@ -43,7 +43,7 @@ numOfLanes = size(segconfig{1, 3}, 2);
 matchedLane = laneNumberEst(newdata,segconfig);
 
 %% Step Two : Process new data before merging.       
-newlines1 = dataPreProc(newdata{1,2},xlist,theta,fitFlag);     
+newlines1 = dataPreProc(newdata{1,2},xlist,theta,fitFlag,matchedLane,segID);     
   
 %% Step Three: Process new data before merging.
 if isempty(bdatabase{1, 2})
@@ -61,11 +61,21 @@ end
 figure(400)
 subplot(3,1,matchedLane);
 hold off
-plot (newlines1{1,1}(:,1),newlines1{1,1}(:,2),'-r.');
+
+l1 = newlines1{1,1};
+l2 = newlines1{1,2};
+
+p1 = l1(:,3);
+p2 = l2(:,3);
+ind1 =  (p1/max(p1)) >= 0.5;
+ind2 =  (p2/max(p2)) >= 0.5;
+        
+plot (l1(ind1,1),l1(ind1,2),'r.');
 hold on;
-plot (newlines1{1,2}(:,1),newlines1{1,2}(:,2),'-b.')
+plot (l2(ind2,1),l2(ind2,2),'g.');
 grid on
 axis equal
 title('BG data')
+end
 
 

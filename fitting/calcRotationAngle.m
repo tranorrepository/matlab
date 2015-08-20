@@ -26,7 +26,7 @@ theta = atan2((y0-y1),(x0-x1));
 
 X0 = real((x+y*1i)*exp(-theta*j));
 if (X0(1) < X0(3))
-    X = [ min(X0(1),X0(2))  max(X0(3),X0(4)) min(X0(5),X0(6))  max(X0(7),X0(8))];
+    X = round([ min(X0(1),X0(2))  max(X0(3),X0(4)) min(X0(5),X0(6))  max(X0(7),X0(8))],1);
 else
-    X = [ max(X0(1),X0(2))  min(X0(3),X0(4)) max(X0(5),X0(6))  min(X0(7),X0(8))];
+    X = round([ max(X0(1),X0(2))  min(X0(3),X0(4)) max(X0(5),X0(6))  min(X0(7),X0(8))],1);
 end
