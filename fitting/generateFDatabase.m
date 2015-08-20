@@ -57,62 +57,6 @@ if (numOfLanes==2 & validLaneIndex(2)==-1)
     numOfLanes = 1;
     validLaneIndex(3)=-1;
 end
-if PLOT_ON
-    figure(20)
-    clf(figure(20));
-    hold off
-    % background database
-    for ll = validLaneIndex(validLaneIndex>0)
-        if ~isempty(database{1, 2}{1, ll})
-            ol1 = database{1, 2}{1, ll}{1, 1};
-            ol2 = database{1, 2}{1, ll}{1, 2};
-            subplot(1,2,1);
-            plot(ol1(:, X), ...
-                ol1(:, Y), color{ll}); hold on;
-            plot(ol2(:, X), ...
-                ol2(:, Y), color{ll}); hold on;
-        end
-    end
-    axis equal
-    grid on
-    title(['foreground data + no rotation' num2str(theta/pi*180)]);
-end
-
-% apply rotation
-for lane = validLaneIndex(validLaneIndex>0)
-    lane
-    database
-    lineIn.x = database{1, 2}{1,lane}{1,1}(:,1);
-    lineIn.y = database{1, 2}{1,lane}{1,1}(:,2);
-    lineOut = rotline(lineIn,-theta);
-    database{1, 2}{1,lane}{1,1}(:,1) = lineOut.x;
-    database{1, 2}{1,lane}{1,1}(:,2) = lineOut.y;
-    
-    lineIn.x = database{1, 2}{1,lane}{1,2}(:,1);
-    lineIn.y = database{1, 2}{1,lane}{1,2}(:,2);
-    lineOut = rotline(lineIn,-theta);
-    database{1, 2}{1,lane}{1,2}(:,1) = lineOut.x;
-    database{1, 2}{1,lane}{1,2}(:,2) = lineOut.y;
-end
-
-if PLOT_ON
-    figure(20)   
-    % background database
-    for ll = validLaneIndex(validLaneIndex>0)
-        if ~isempty(database{1, 2}{1, ll})
-            ol1 = database{1, 2}{1, ll}{1, 1};
-            ol2 = database{1, 2}{1, ll}{1, 2};
-            subplot(1,2,2);
-            plot(ol1(:, X), ...
-                ol1(:, Y), color{ll}); hold on;
-            plot(ol2(:, X), ...
-                ol2(:, Y), color{ll}); hold on;
-        end
-    end
-    axis equal
-    grid on
-    title('foreground data + data rotation');
-end
 
 %% data fitting
 if Xrange(3) < Xrange(4)
@@ -120,7 +64,6 @@ if Xrange(3) < Xrange(4)
 else
     xlist = Xrange(3):-0.05:Xrange(4);
 end
-
 
 A = zeros(length(xlist),numOfLanes*2);
 ind = 1;
@@ -142,7 +85,8 @@ for lane = validLaneIndex(validLaneIndex>0)
 end
 
 if 1
-    figure(11)
+    figure(501)
+    subplot(1,2,1)
     plot(xlist,A,'-o');
     axis equal
     grid on;
@@ -182,7 +126,8 @@ else
     return;
 end
 if 1
-    figure(12)
+    figure(501)
+    subplot(1,2,2)
     plot(xlist,B,'-o');
     axis equal
     grid on;
@@ -196,7 +141,7 @@ end
 
 %
 %% rotation back to original direction.
-figure(13);
+figure(503);
 for lane = 1:numOfLanes+1
     lineIn.x = xlist(index)';
     lineIn.y = B(index,lane);

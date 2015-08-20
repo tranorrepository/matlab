@@ -22,7 +22,7 @@ x1 = (x(3)+x(4))/2;
 y0 = (y(1)+y(2))/2;
 y1 = (y(3)+y(4))/2;
 
-theta = atan2(abs(y0-y1),abs(x0-x1));
+theta = atan2((y0-y1),(x0-x1));
 
 X0 = real((x+y*1i)*exp(-theta*j));
 if (X0(1) < X0(3))

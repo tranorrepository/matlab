@@ -13,19 +13,11 @@ load('common.mat');
 load('sectionConfig.mat');
 load('sectionsGroup_0815_1.mat');
 
-if PLOT_ON
-    clf(figure(100))
-    clf(figure(201));
-    clf(figure(301));
-    clf(figure(401));
-    clf(figure(402));
-    clf(figure(403));
-    
-    clf(figure(10));
-    clf(figure(11));
-    clf(figure(12));
-    clf(figure(13));
-    clf(figure(20));
+if PLOT_ON    
+    clf(figure(400));
+       
+    clf(figure(501));
+    clf(figure(503));    
 end
 
 newdata = sectionsDataOut;
@@ -56,10 +48,10 @@ bdatabase = database;
 fdatabase = cell(numOfSeg, 2);
 
 times = 1;
-for kk = 1:10
+for kk = 1:50
     display(times)
     times = times + 1;
-    clf(figure(13));
+    clf(figure(503));
 for ns = 1:21
     %ns = 13
    
@@ -85,7 +77,7 @@ for ns = 1:21
         [theta, X]= calcRotationAngle(segconfig,newSegID); 
         %theta = theta + pi/4;
         %%
-        for jj = 1:3
+        for jj = 1:1
             a = 2;
             b = numOfNewSets+1;
             ii = round((b-a).*rand(1,1) + a);
@@ -98,7 +90,7 @@ for ns = 1:21
                 data2 = temp{1, 2}{1, 2};
                 
                 % merge new data with backgound database                 
-                DB= generateBDatabase2(segconfig(newSegID, :), bdatabase(newSegID, :), temp,theta,X);
+                DB= generateBDatabase3(segconfig(newSegID, :), bdatabase(newSegID, :), temp,theta,X);
                 bdatabase(newSegID, :) = DB;
             end
         end

@@ -21,7 +21,7 @@ function bdatabase = generateBDatabase2(segconfig, database, newdata, theta, Xra
 %
 %   bdatabase - new background database after mering new lane data
 %
-%
+%  version : v1.0.0818
 
 load('common.mat');
 
