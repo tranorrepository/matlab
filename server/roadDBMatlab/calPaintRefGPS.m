@@ -1,0 +1,1 @@
+function roadPaintData = calPaintRefGPS(paintPoints,  gpsAndInterval)
