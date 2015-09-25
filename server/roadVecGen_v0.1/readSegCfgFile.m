@@ -39,47 +39,73 @@ if -1 == fid
 end
 
 % read configuration data
-segCfg = struct('segNum', 0, 'width', 0, 'overlap', 0, ...
-                'minLength', 0, 'maxLength', 0, ...
-                'stepSize', 0, 'paintVal', 0);
-
-% total number of sections
-fline = fgetl(fid);
-segCfg.segNum = sscanf(fline, '%d');
-
-% overall configuration
-fline = fgetl(fid);
-cfg = sscanf(fline, 'width=%f,overlap=%f,minLength=%f,maxLength=%f,stepSize=%f,paintV=%f');
-segCfg.width = cfg(1);
-segCfg.overlap = cfg(2);
-segCfg.minLength = cfg(3);
-segCfg.maxLength = cfg(4);
-segCfg.stepSize = cfg(5);
-segCfg.paintVal = cfg(6);
+segCfg = struct('segNum', 0);
 
 segCfgList = struct('segId', 0, 'laneNum', 0, ...
                     'ports', struct('x', zeros(4, 1), 'y', zeros(4, 1)), ...
-                    'laneType', []);
+                    'laneType', [], 'connInfo', []);
 
 % number of section configuration points
 SEG_CFG_PNT_NUM = 4;
+
+% get lines of file
+rows = 0;
+while ~feof(fid)
+    rows = rows + sum(fread(fid, 10000, '*char') == char(10));
+end
+frewind(fid);
+
+segCfg.segNum = rows / 4;
 
 % iterate each section config
 for ii = 1:segCfg.segNum
     % segId and lane number
     fline = fgetl(fid);
-    lane = sscanf(fline, '%d,%d');
+    lane = sscanf(fline, 'segId: %d,laneNum: %d');
     segCfgList(ii).segId = lane(1);
     segCfgList(ii).laneNum = lane(2);
     
+    fline = fgetl(fid);
     % section lane type
     switch (segCfgList(ii).laneNum)
         case 1
-            segCfgList(ii).laneType = {'11'};
+            lt = sscanf(fline, 'lineType: %d,%d');
+            str = strcat(num2str(lt(1)), num2str(lt(2)));
+            segCfgList(ii).laneType = {str};
+            
+            fline = fgetl(fid);
+            lt = sscanf(fline, 'connectInfo: %d');
+            segCfgList(ii).connInfo = lt;
         case 2
-            segCfgList(ii).laneType = {'10'; '01'};
+            lt = sscanf(fline, 'lineType: %d,%d,%d');
+            str1 = strcat(num2str(lt(1)), num2str(lt(2)));
+            str2 = strcat(num2str(lt(2)), num2str(lt(3)));
+            segCfgList(ii).laneType = {str1; str2};
+            
+            fline = fgetl(fid);
+            lt = sscanf(fline, 'connectInfo: %d,%d');
+            segCfgList(ii).connInfo = lt;
         case 3
-            segCfgList(ii).laneType = {'10'; '00'; '01'};
+            lt = sscanf(fline, 'lineType: %d,%d,%d,%d');
+            str1 = strcat(num2str(lt(1)), num2str(lt(2)));
+            str2 = strcat(num2str(lt(2)), num2str(lt(3)));
+            str3 = strcat(num2str(lt(3)), num2str(lt(4)));
+            segCfgList(ii).laneType = {str1; str2; str3};
+            
+            fline = fgetl(fid);
+            lt = sscanf(fline, 'connectInfo: %d,%d,%d');
+            segCfgList(ii).connInfo = lt;
+        case 4
+            lt = sscanf(fline, 'lineType: %d,%d,%d,%d,%d');
+            str1 = strcat(num2str(lt(1)), num2str(lt(2)));
+            str2 = strcat(num2str(lt(2)), num2str(lt(3)));
+            str3 = strcat(num2str(lt(3)), num2str(lt(4)));
+            str4 = strcat(num2str(lt(4)), num2str(lt(5)));
+            segCfgList(ii).laneType = {str1; str2; str3; str4};
+            
+            fline = fgetl(fid);
+            lt = sscanf(fline, 'connectInfo: %d,%d,%d,%d');
+            segCfgList(ii).connInfo = lt;
     end
     
     % config points

@@ -52,7 +52,7 @@ end
 if isempty(lenL) || isempty(lenR)
     laneNumber = [];
 else
-    T = 40;
+    T = 50;
     
     mL = mean(lenL);
     sL = std(lenL);
@@ -63,38 +63,66 @@ else
     LL = mL + sL;
     RR = mR + sR;
     
+%     if LL > RR
+%         if LL / RR < 2
+%             if RR > T
+%                 lane = {'11'};
+%             else
+%                 lane = {'00'};
+%             end
+%         elseif LL < T
+%             lane = {'00'};
+%         elseif RR > 2 * T
+%             lane = {'11'};
+%         else
+%             lane = {'10'};
+%         end
+%     else
+%         if RR / LL < 2
+%             if LL > T
+%                 lane = {'11'};
+%             else
+%                 lane = {'00'};
+%             end
+%         elseif RR < T
+%             lane = {'00'};
+%         elseif LL > 2 * T
+%             lane = {'11'};
+%         else
+%             lane = {'01'};
+%         end
+%     end
+
     if LL > RR
-        if LL / RR < 2
+        if LL / RR > 2
+           lane = {'10'}; 
+        else
             if RR > T
                 lane = {'11'};
-            else
+            elseif 2 * RR  < T
                 lane = {'00'};
+            elseif LL < T
+                lane = {'00'};
+            else
+                lane = {'10'};
             end
-        elseif LL < T
-            lane = {'00'};
-        elseif RR > 2 * T
-            lane = {'11'};
-        else
-            lane = {'10'};
         end
     else
-        if RR / LL < 2
+        if RR / LL > 2
+            lane = {'01'};
+        else
             if LL > T
                 lane = {'11'};
-            else
+            elseif 2 * LL < T
                 lane = {'00'};
+            elseif RR < T
+                lane = {'00'};
+            else
+                lane = {'01'};
             end
-        elseif RR < T
-            lane = {'00'};
-        elseif LL > 2 * T
-            lane = {'11'};
-        else
-            l = 0;
-            r = 1;
-            lane = {'01'};
         end
     end
-    
+
     % find matched lane
     laneNumber = 1;
     for ii = 1:segcfg.laneNum

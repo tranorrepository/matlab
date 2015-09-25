@@ -41,7 +41,7 @@ nl2 = laneIn(2);
 
 % plot new lane data
 if PLOT_ON
-    figure(300)
+    clf(figure(300))
     subplot(2,2,4)
     hold off
     plot(nl1.x(nl1.paint > 0), nl1.y(nl1.paint > 0), 'r.', ...
@@ -83,14 +83,31 @@ else
     paint2 = zeros(size(xfulllist));
     
     for k = 1:size(ii1, 1)
-        if (ii1(k, 1) >= 1)&& (ii1(k, 2) <= n)
-            paint1(ii1(k, 1):ii1(k, 2)) = 1;
+        a1 = ii1(k, 1);
+        b1 = ii1(k, 2);
+        
+        if (a1 >= 1) && (b1 <= n)
+            paint1(a1:b1) = 1;
+        elseif (a1 < 1) && (b1 > 1) && (b1 <= n)
+            paint1(1:b1) = 1;
+        elseif (a1 < 1) && (b1 > n)
+            paint1(1:n) = 1;
+        elseif (a1 >= 1)&& (b1 > n)
+            paint1(a1:n) = 1;
         end
     end
     
     for k = 1:size(ii2, 1)
-        if (ii2(k, 1) >= 1)&& (ii2(k, 2) <= n)
-            paint2(ii2(k, 1):ii2(k, 2)) = 1;
+        a1 = ii2(k, 1);
+        b1 = ii2(k, 2);
+        if (a1 >= 1) && (b1 <= n)
+            paint2(a1:b1) = 1;
+        elseif (a1 < 1) && (b1 > 1) && (b1 <= n)
+            paint2(1:b1) = 1;
+        elseif (a1 < 1) && (b1 > n)
+            paint2(1:n) = 1;
+        elseif (a1 >= 1) && (b1 > n)
+            paint2(a1:n) = 1;
         end
     end
     
@@ -177,11 +194,33 @@ else
             axis equal; grid on; hold off
             title(['Lane number =' num2str(laneNumber) ', SecID = ' num2str(segID)]);
             
-            figure(301)
-            subplot(2, 2, laneNumber)
+            clf(figure(301))
+            subplot(3, 1, 1)
             plot(xfulllist, y1, 'r.', xfulllist, y2, 'b.');
             axis equal; grid on; hold off
             title(['Lane number = ' num2str(laneNumber) ', SecID = ' num2str(segID)]);
+            
+            
+            sp = floor(n / 100);
+            subplot(3, 1, 2)
+            plot(xfulllist, 10 * paint1, '-r.'); hold on;
+            axis equal; grid on; hold off
+            title(['Paint Lane number = ' num2str(laneNumber) ', SecID = ' num2str(segID)]);
+            if step < 0.0
+                axis([xfulllist(end) xfulllist(1) -5 15]);
+            else
+                axis([xfulllist(1) xfulllist(end) -5 15]);
+            end
+            
+            subplot(3, 1, 3)
+            plot(xfulllist, 10 * paint2, '-b.'); hold on;
+            axis equal; grid on; hold off
+            title(['Paint Lane number = ' num2str(laneNumber) ', SecID = ' num2str(segID)]);
+            if step < 0.0
+                axis([xfulllist(end) xfulllist(1) -5 15]);
+            else
+                axis([xfulllist(1) xfulllist(end) -5 15]);
+            end
         end
     else
         laneOut = [];

@@ -65,7 +65,7 @@ if ~isempty(newlane)
     % plot data
     if PLOT_ON
         figure(400)
-        subplot(3, 1, matchedLane);
+        subplot(numOfLanes, 1, matchedLane);
         hold off
         
         l1 = newlane(1);
