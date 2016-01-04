@@ -202,8 +202,12 @@ else
             
             
             sp = floor(n / 100);
+            mp = mod(n, 100);
+            pp = floor((mp - 1) / 2);
+            id = 1 + pp:sp:100*sp + pp;
             subplot(3, 1, 2)
             plot(xfulllist, 10 * paint1, '-r.'); hold on;
+            plot(xfulllist(id), 10 * paint1(id), '-g.');
             axis equal; grid on; hold off
             title(['Paint Lane number = ' num2str(laneNumber) ', SecID = ' num2str(segID)]);
             if step < 0.0
@@ -214,6 +218,7 @@ else
             
             subplot(3, 1, 3)
             plot(xfulllist, 10 * paint2, '-b.'); hold on;
+            plot(xfulllist(id), 10 * paint2(id), '-g.');
             axis equal; grid on; hold off
             title(['Paint Lane number = ' num2str(laneNumber) ', SecID = ' num2str(segID)]);
             if step < 0.0

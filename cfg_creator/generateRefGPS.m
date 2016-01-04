@@ -4,8 +4,8 @@ format long
 
 cfggps = load(filename);
 COEFF_DD2METER = 111320.0;
-ref.x = 11.758086000000000;
-ref.y = 48.354788999999997;
+ref.x = -122.05374589;
+ref.y = 37.39630022;
 
 numOfPnts = size(cfggps, 1);
 cfgpnts = zeros(numOfPnts, 2);

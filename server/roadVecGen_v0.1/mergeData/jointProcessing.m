@@ -10,7 +10,7 @@
 %      2015/09/11              Ming Chen              Create
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function nfdatabase = jointProcessing(fdatabase)
+function nfdatabase = jointProcessing(segCfg, segCfgItem, fdatabase)
 % JOINTPROCESSING
 %    joint adjacent section connection part
 %
@@ -27,14 +27,18 @@ nfdatabase = fdatabase;
 % number of sections
 numOfSegs = size(fdatabase, 2);
 
+prev = 0;
 for curr = 1:numOfSegs
     if 1 == curr
-        prev = numOfSegs;
+        if 1 == segCfg.bCircle
+            prev = numOfSegs;
+        end
     else
         prev = curr - 1;
     end
     
     if isempty(fdatabase(curr).lineData) || ...
+       (prev == 0) || ...
        isempty(fdatabase(prev).lineData)
         continue
     end
